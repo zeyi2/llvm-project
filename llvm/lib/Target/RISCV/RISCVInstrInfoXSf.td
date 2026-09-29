@@ -197,15 +197,17 @@ let Predicates = [HasVendorXSfvcp], mayLoad = 0, mayStore = 0,
   defm XV  : CustomSiFiveVCIX<VCIX_Rs1V,  VCIX_GPR>,   Sched<[]>;
   defm IV  : CustomSiFiveVCIX<VCIX_Rs1V,  VCIX_simm5>, Sched<[]>;
   defm VV  : CustomSiFiveVCIX<VCIX_Rs1V,  VCIX_VR>,    Sched<[]>;
-  defm FV  : CustomSiFiveVCIX<VCIX_Rs1V,  VCIX_FPR32>, Sched<[]>;
   defm XVV : CustomSiFiveVCIX<VCIX_Rs1VV, VCIX_GPR>,   Sched<[]>;
   defm IVV : CustomSiFiveVCIX<VCIX_Rs1VV, VCIX_simm5>, Sched<[]>;
   defm VVV : CustomSiFiveVCIX<VCIX_Rs1VV, VCIX_VR>,    Sched<[]>;
-  defm FVV : CustomSiFiveVCIX<VCIX_Rs1VV, VCIX_FPR32>, Sched<[]>;
   defm XVW : CustomSiFiveVCIX<VCIX_Rs1VW, VCIX_GPR>,   Sched<[]>;
   defm IVW : CustomSiFiveVCIX<VCIX_Rs1VW, VCIX_simm5>, Sched<[]>;
   defm VVW : CustomSiFiveVCIX<VCIX_Rs1VW, VCIX_VR>,    Sched<[]>;
-  defm FVW : CustomSiFiveVCIX<VCIX_Rs1VW, VCIX_FPR32>, Sched<[]>;
+  let append Predicates = [HasVInstructionsAnyF] in {
+    defm FV  : CustomSiFiveVCIX<VCIX_Rs1V,  VCIX_FPR32>, Sched<[]>;
+    defm FVV : CustomSiFiveVCIX<VCIX_Rs1VV, VCIX_FPR32>, Sched<[]>;
+    defm FVW : CustomSiFiveVCIX<VCIX_Rs1VW, VCIX_FPR32>, Sched<[]>;
+  }
 }
 
 // For XSfvqmaccdod/qoq and XSfvfwmaccqqq

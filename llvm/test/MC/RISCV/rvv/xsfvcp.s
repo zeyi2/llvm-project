@@ -2,10 +2,18 @@
 # RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST
 # RUN: llvm-mc -triple=riscv64 -show-encoding --mattr=+v,+xsfvcp %s \
 # RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST
-# RUN: not llvm-mc -triple=riscv32 -show-encoding %s 2>&1 \
+# RUN: llvm-mc -triple=riscv32 -show-encoding --mattr=+zve32f,+xsfvcp %s \
+# RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST
+# RUN: llvm-mc -triple=riscv64 -show-encoding --mattr=+zve32f,+xsfvcp %s \
+# RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST
+# RUN: not llvm-mc -triple=riscv32 -show-encoding --mattr=+zve32f %s 2>&1 \
 # RUN:        | FileCheck %s --check-prefix=CHECK-ERROR
-# RUN: not llvm-mc -triple=riscv64 -show-encoding %s 2>&1 \
+# RUN: not llvm-mc -triple=riscv64 -show-encoding --mattr=+zve32f %s 2>&1 \
 # RUN:        | FileCheck %s --check-prefix=CHECK-ERROR
+# RUN: not llvm-mc -triple=riscv32 --mattr=+xsfvcp,+f %s 2>&1 \
+# RUN:        | FileCheck %s --check-prefix=CHECK-NO-EXTZVE32F
+# RUN: not llvm-mc -triple=riscv64 --mattr=+xsfvcp,+f %s 2>&1 \
+# RUN:        | FileCheck %s --check-prefix=CHECK-NO-EXTZVE32F
 # RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+v,+xsfvcp %s \
 # RUN:        | llvm-objdump -d --mattr=+v,+xsfvcp --no-print-imm-hex - \
 # RUN:        | FileCheck %s --check-prefix=CHECK-INST
@@ -42,6 +50,7 @@ sf.vc.fv 0x1, 0x1f, v2, fa1
 # CHECK-INST: sf.vc.fv 1, 31, v2, fa1
 # CHECK-ENCODING: [0xdb,0xdf,0x25,0x2e]
 # CHECK-ERROR: instruction requires the following: 'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions){{$}}
+# CHECK-NO-EXTZVE32F: error: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32f' (Vector Extensions for Embedded Processors){{$}}
 
 sf.vc.vvv 0x3, v0, v2, v1
 # CHECK-INST: sf.vc.vvv 3, v0, v2, v1
@@ -62,6 +71,7 @@ sf.vc.fvv 0x1, v0, v2, fa1
 # CHECK-INST: sf.vc.fvv 1, v0, v2, fa1
 # CHECK-ENCODING: [0x5b,0xd0,0x25,0xae]
 # CHECK-ERROR: instruction requires the following: 'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions){{$}}
+# CHECK-NO-EXTZVE32F: error: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32f' (Vector Extensions for Embedded Processors){{$}}
 
 sf.vc.vvw 0x3, v0, v2, v1
 # CHECK-INST: sf.vc.vvw 3, v0, v2, v1
@@ -82,6 +92,7 @@ sf.vc.fvw 0x1, v0, v2, fa1
 # CHECK-INST: sf.vc.fvw 1, v0, v2, fa1
 # CHECK-ENCODING: [0x5b,0xd0,0x25,0xfe]
 # CHECK-ERROR: instruction requires the following: 'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions){{$}}
+# CHECK-NO-EXTZVE32F: error: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32f' (Vector Extensions for Embedded Processors){{$}}
 
 sf.vc.v.x 0x3, 0xf, v0, a1
 # CHECK-INST: sf.vc.v.x 3, 15, v0, a1
@@ -112,6 +123,7 @@ sf.vc.v.fv 0x1, v0, v2, fa1
 # CHECK-INST: sf.vc.v.fv 1, v0, v2, fa1
 # CHECK-ENCODING: [0x5b,0xd0,0x25,0x2c]
 # CHECK-ERROR: instruction requires the following: 'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions){{$}}
+# CHECK-NO-EXTZVE32F: error: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32f' (Vector Extensions for Embedded Processors){{$}}
 
 sf.vc.v.vvv 0x3, v0, v2, v1
 # CHECK-INST: sf.vc.v.vvv 3, v0, v2, v1
@@ -132,6 +144,7 @@ sf.vc.v.fvv 0x1, v0, v2, fa1
 # CHECK-INST: sf.vc.v.fvv 1, v0, v2, fa1
 # CHECK-ENCODING: [0x5b,0xd0,0x25,0xac]
 # CHECK-ERROR: instruction requires the following: 'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions){{$}}
+# CHECK-NO-EXTZVE32F: error: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32f' (Vector Extensions for Embedded Processors){{$}}
 
 sf.vc.v.vvw 0x3, v0, v2, v1
 # CHECK-INST: sf.vc.v.vvw 3, v0, v2, v1
@@ -152,3 +165,4 @@ sf.vc.v.fvw 0x1, v0, v2, fa1
 # CHECK-INST: sf.vc.v.fvw 1, v0, v2, fa1
 # CHECK-ENCODING: [0x5b,0xd0,0x25,0xfc]
 # CHECK-ERROR: instruction requires the following: 'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions){{$}}
+# CHECK-NO-EXTZVE32F: error: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32f' (Vector Extensions for Embedded Processors){{$}}

@@ -1,0 +1,35 @@
+# RUN: llvm-mc -disassemble -triple=riscv32 -mattr=+xsfvcp,+zve32f %s \
+# RUN:   | FileCheck %s --check-prefix=CHECK
+# RUN: llvm-mc -disassemble -triple=riscv64 -mattr=+xsfvcp,+zve32f %s \
+# RUN:   | FileCheck %s --check-prefix=CHECK
+# RUN: not llvm-mc -disassemble -triple=riscv32 -mattr=+xsfvcp,+f %s 2>&1 \
+# RUN:   | FileCheck %s --check-prefix=CHECK-NO-EXTZVE32F
+# RUN: not llvm-mc -disassemble -triple=riscv64 -mattr=+xsfvcp,+f %s 2>&1 \
+# RUN:   | FileCheck %s --check-prefix=CHECK-NO-EXTZVE32F
+
+[0xdb,0xcf,0xf5,0x0e]
+# CHECK: sf.vc.x 3, 15, 31, a1
+
+[0xdb,0xdf,0x25,0x2e]
+# CHECK: sf.vc.fv 1, 31, v2, fa1
+# CHECK-NO-EXTZVE32F: warning: invalid instruction encoding
+
+[0x5b,0xd0,0x25,0xae]
+# CHECK: sf.vc.fvv 1, v0, v2, fa1
+# CHECK-NO-EXTZVE32F: warning: invalid instruction encoding
+
+[0x5b,0xd0,0x25,0xfe]
+# CHECK: sf.vc.fvw 1, v0, v2, fa1
+# CHECK-NO-EXTZVE32F: warning: invalid instruction encoding
+
+[0x5b,0xd0,0x25,0x2c]
+# CHECK: sf.vc.v.fv 1, v0, v2, fa1
+# CHECK-NO-EXTZVE32F: warning: invalid instruction encoding
+
+[0x5b,0xd0,0x25,0xac]
+# CHECK: sf.vc.v.fvv 1, v0, v2, fa1
+# CHECK-NO-EXTZVE32F: warning: invalid instruction encoding
+
+[0x5b,0xd0,0x25,0xfc]
+# CHECK: sf.vc.v.fvw 1, v0, v2, fa1
+# CHECK-NO-EXTZVE32F: warning: invalid instruction encoding
